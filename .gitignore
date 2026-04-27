@@ -1,0 +1,18 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Maven
+target/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# IDE internal files
+/shelf/
+/workspace.xml
+/httpRequests/
+/dataSources/
