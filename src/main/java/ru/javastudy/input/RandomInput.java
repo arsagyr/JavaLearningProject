@@ -5,6 +5,7 @@ import ru.javastudy.models.Person;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class RandomInput implements InputStrategy {
 
@@ -17,13 +18,20 @@ public class RandomInput implements InputStrategy {
 
     private static final String[] LASTNAME_ENDINGS = {"ов", "ев", "ин"};
 
+
     private final Random random = new Random();
 
     @Override
-    public List<Person> load(int size) {
+    public List<Person> load() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Введите кол-во человек: ");
+        int size = scanner.nextInt();
+
         if (size <= 0) {
             throw new IllegalArgumentException("Size must be positive");
         }
+
         List<Person> persons = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {

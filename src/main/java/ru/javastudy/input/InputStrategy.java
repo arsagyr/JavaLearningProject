@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface InputStrategy {
 
-    List<Person> load(int size);
+    List<Person> load();
 
 }
