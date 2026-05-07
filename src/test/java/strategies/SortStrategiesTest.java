@@ -24,6 +24,9 @@ public class SortStrategiesTest {
         p4 = Person.builder().year(1990).lastName("Антонов").firstName("Андрей").build();
     }
 
+    /**
+     * Проверка стандартной сортировки: сначала год, при равенстве — фамилия, затем имя.
+     */
     @Test
     void testStandardQuickSort() {
         PersonList list = new PersonList();
@@ -43,6 +46,9 @@ public class SortStrategiesTest {
         assertEquals(p1, list.get(3));
     }
 
+    /**
+     * Проверка хитрой сортировки: фиксации нечетных элементов на месте и сортировки четных.
+     */
     @Test
     void testEvenQuickSort() {
         PersonList list = new PersonList();
@@ -70,6 +76,9 @@ public class SortStrategiesTest {
         assertEquals(even1, list.get(3));
     }
 
+    /**
+     * Проверка устойчивости к пустой коллекции и коллекции из одного элемента.
+     */
     @Test
     void testSortEmptyAndSingleElementList() {
         PersonList emptyList = new PersonList();
@@ -87,6 +96,9 @@ public class SortStrategiesTest {
         assertEquals(p1, singleList.get(0));
     }
 
+    /**
+     * Проверка стабильности на отсортированной и реверсивной коллекции.
+     */
     @Test
     void testSortAlreadySortedAndReversedList() {
         PersonList sortedList = new PersonList();
@@ -111,10 +123,12 @@ public class SortStrategiesTest {
         assertEquals(p1, reversedList.get(1));
     }
 
+    /**
+     * Проверка защиты от бесконечной рекурсии на коллекции дубликатов.
+     */
     @Test
     void testSortWithIdenticalElements() {
         PersonList list = new PersonList();
-        // Создаем три абсолютно одинаковых объекта
         Person identical1 = Person.builder().year(1995).lastName("Смирнов").firstName("Игорь").build();
         Person identical2 = Person.builder().year(1995).lastName("Смирнов").firstName("Игорь").build();
         Person identical3 = Person.builder().year(1995).lastName("Смирнов").firstName("Игорь").build();
@@ -125,8 +139,55 @@ public class SortStrategiesTest {
 
         SortingStrategy sorter = new QuickSort();
 
-        // Должен успешно завершиться, не зациклившись
         assertDoesNotThrow(() -> sorter.sort(list));
         assertEquals(3, list.size());
+    }
+
+    /**
+     * Проверка защиты от NullPointerException при передаче null вместо списка.
+     */
+    @Test
+    void testSortWithNullList() {
+        SortingStrategy sorter = new QuickSort();
+        assertDoesNotThrow(() -> sorter.sort(null));
+    }
+
+    /**
+     * Проверка: при полном отсутствии четных годов рождения порядок элементов не меняется.
+     */
+    @Test
+    void testEvenQuickSortWithNoEvenYears() {
+        PersonList list = new PersonList();
+        Person odd1 = Person.builder().year(1991).lastName("Б").firstName("Б").build();
+        Person odd2 = Person.builder().year(1995).lastName("А").firstName("А").build();
+        list.add(odd1);
+        list.add(odd2);
+
+        SortingStrategy sorter = new EvenQuickSort();
+        sorter.sort(list);
+
+        assertEquals(odd1, list.get(0));
+        assertEquals(odd2, list.get(1));
+    }
+
+    /**
+     * Проверка: один четный элемент игнорирует сортировку.
+     */
+    @Test
+    void testEvenQuickSortWithSingleEvenYear() {
+        PersonList list = new PersonList();
+        Person odd1 = Person.builder().year(1995).lastName("Б").firstName("Б").build();
+        Person even1 = Person.builder().year(1990).lastName("В").firstName("В").build();
+        Person odd2 = Person.builder().year(1991).lastName("А").firstName("А").build();
+        list.add(odd1);
+        list.add(even1);
+        list.add(odd2);
+
+        SortingStrategy sorter = new EvenQuickSort();
+        sorter.sort(list);
+
+        assertEquals(odd1, list.get(0));
+        assertEquals(even1, list.get(1));
+        assertEquals(odd2, list.get(2));
     }
 }
