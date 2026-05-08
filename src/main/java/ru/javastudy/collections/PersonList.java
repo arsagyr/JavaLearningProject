@@ -46,6 +46,23 @@ public class PersonList {
     }
 
     /**
+     * Быстрое заполнение коллекции данными из другого массива.
+     * Использует системное копирование памяти для максимальной производительности.
+     */
+    public void addAll(PersonList newElements) {
+        if (newElements == null || newElements.size() == 0) return;
+
+        // Если новый список больше нашего текущего массива — расширяемся
+        if (newElements.size() > this.elements.length){
+            this.elements = new Person[newElements.size()];
+        }
+
+        // Копируем ИЗ массива другого объекта В наш массив
+        System.arraycopy(newElements.elements, 0, this.elements, 0, newElements.size());
+        this.size = newElements.size();
+    }
+
+    /**
      * Возвращает поток данных Stream.
      * Ограничивает обработку только заполненными элементами (игнорирует null-хвост массива).
      */
@@ -53,12 +70,21 @@ public class PersonList {
         return Arrays.stream(elements, 0, size);
     }
 
-
     /**
      * Сбрасывает состояние коллекции к первоначальному.
      */
     public void clear() {
         this.elements = new Person[DEFAULT_CAPACITY];
+        this.size = 0;
+    }
+
+    /**
+     * Сбрасывает состояние коллекции с установкой новой вместимости.
+     * Позволяет избежать многократного расширения массива при заполнении данными
+     * известного объема (например, после промежуточной обработки).
+     */
+    public void clear(int capacity) {
+        this.elements = new Person[capacity];
         this.size = 0;
     }
 

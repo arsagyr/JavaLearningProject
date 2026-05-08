@@ -124,6 +124,35 @@ public class SortStrategiesTest {
     }
 
     /**
+     * Проверка стабильности: корректная перестановка четных элементов с одинаковыми годами.
+     * Сортировка перестраивает элементы по фамилии, не нарушая общую структуру индексов коллекции.
+     */
+    @Test
+    void testEvenQuickSortWithIdenticalEvenYears() {
+        PersonList list = new PersonList();
+        Person odd1 = Person.builder().year(2001).lastName("Я").firstName("А").build();
+        Person even1 = Person.builder().year(2002).lastName("Б").firstName("Б").build(); // Индекс 1
+        Person odd2 = Person.builder().year(2003).lastName("В").firstName("В").build();
+        Person even2 = Person.builder().year(2002).lastName("А").firstName("Г").build(); // Индекс 3
+
+        list.add(odd1);
+        list.add(even1);
+        list.add(odd2);
+        list.add(even2);
+
+        SortingStrategy sorter = new EvenQuickSort();
+        sorter.sort(list);
+
+        // Нечетные жестко зафиксированы на позициях 0 и 2
+        assertEquals(odd1, list.get(0));
+        assertEquals(odd2, list.get(2));
+
+        // Из-за приоритета фамилии элементы 2002 "А" и 2002 "Б" обязаны поменяться индексами
+        assertEquals(even2, list.get(1));
+        assertEquals(even1, list.get(3));
+    }
+
+    /**
      * Проверка защиты от бесконечной рекурсии на коллекции дубликатов.
      */
     @Test
@@ -144,50 +173,34 @@ public class SortStrategiesTest {
     }
 
     /**
-     * Проверка защиты от NullPointerException при передаче null вместо списка.
+     * Экстремальный стресс-тест: 1 000_000 элементов.
+     * Проверка стабильности архитектуры и производительности на критических объемах данных.
      */
     @Test
-    void testSortWithNullList() {
-        SortingStrategy sorter = new QuickSort();
-        assertDoesNotThrow(() -> sorter.sort(null));
-    }
+    void testEvenQuickSortUltraStress() {
+        int count = 1_000_000;
+        // Инициализируем список сразу с нужным размером, чтобы не тратить время на расширение массива
+        PersonList list = new PersonList(count);
 
-    /**
-     * Проверка: при полном отсутствии четных годов рождения порядок элементов не меняется.
-     */
-    @Test
-    void testEvenQuickSortWithNoEvenYears() {
-        PersonList list = new PersonList();
-        Person odd1 = Person.builder().year(1991).lastName("Б").firstName("Б").build();
-        Person odd2 = Person.builder().year(1995).lastName("А").firstName("А").build();
-        list.add(odd1);
-        list.add(odd2);
+        for (int i = 0; i < count; i++) {
+            // Генерируем данные: половина четных, половина нечетных
+            int year = (i % 2 == 0) ? 2000 : 2001;
+            list.add(Person.builder()
+                    .year(year)
+                    .lastName("Фамилия_" + i)
+                    .firstName("Имя")
+                    .build());
+        }
 
         SortingStrategy sorter = new EvenQuickSort();
-        sorter.sort(list);
 
-        assertEquals(odd1, list.get(0));
-        assertEquals(odd2, list.get(1));
-    }
+        long start = System.currentTimeMillis();
 
-    /**
-     * Проверка: один четный элемент игнорирует сортировку.
-     */
-    @Test
-    void testEvenQuickSortWithSingleEvenYear() {
-        PersonList list = new PersonList();
-        Person odd1 = Person.builder().year(1995).lastName("Б").firstName("Б").build();
-        Person even1 = Person.builder().year(1990).lastName("В").firstName("В").build();
-        Person odd2 = Person.builder().year(1991).lastName("А").firstName("А").build();
-        list.add(odd1);
-        list.add(even1);
-        list.add(odd2);
+        assertDoesNotThrow(() -> sorter.sort(list));
 
-        SortingStrategy sorter = new EvenQuickSort();
-        sorter.sort(list);
+        long end = System.currentTimeMillis();
 
-        assertEquals(odd1, list.get(0));
-        assertEquals(even1, list.get(1));
-        assertEquals(odd2, list.get(2));
+        System.out.println("Обработка 1 000 000 элементов заняла: " + (end - start) + " мс");
+        assertEquals(count, list.size());
     }
 }

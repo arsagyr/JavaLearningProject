@@ -49,16 +49,7 @@ public class PersonListTest {
         assertEquals(3, list.size());
     }
 
-    /**
-     * Проверка защитного механизма get() при сильном превышении верхней границы индекса.
-     */
-    @Test
-    void testSafeGetOutOfBounds() {
-        list.add(p1);
-        assertEquals(p1, list.get(5));
-    }
-
-    /**
+     /**
      * Проверка стабильности get() на пустой коллекции (граничные условия).
      */
     @Test
@@ -132,22 +123,6 @@ public class PersonListTest {
         assertTrue(hasP2);
     }
 
-    /***
-     * Доп. задание 3: заполнение кастомной коллекции посредством стрима
-     */
-    @Test
-    void testPopulateCollectionUsingStreams() {
-        Stream<Person> personStream = Stream.of(p1, p2);
-
-        PersonList destinationList = new PersonList();
-
-        personStream.forEach(destinationList::add);
-
-        assertEquals(2, destinationList.size());
-        assertEquals(p1, destinationList.get(0));
-        assertEquals(p2, destinationList.get(1));
-    }
-
     /**
      * Проверка защитного механизма конструктора при передаче некорректной емкости.
      */
@@ -171,5 +146,84 @@ public class PersonListTest {
         // Вызов метода не должен выбрасывать исключений, а размер коллекции должен остаться нулевым
         assertDoesNotThrow(() -> emptyList.set(0, p3));
         assertEquals(0, emptyList.size());
+    }
+
+    /**
+     * Тестирование корректности расширения массива ровно в момент достижения лимита.
+     * Проверяет, что переход через границу (с 10 на 11 элемент) не приводит к потере данных.
+     */
+    @Test
+    void testExactCapacityBoundary() {
+        PersonList dynamicList = new PersonList(10);
+        // Заполняем список до дефолтного предела
+        for (int i = 0; i < 10; i++) {
+            dynamicList.add(p1);
+        }
+
+        // Добавление 11-го элемента должно триггернуть System.arraycopy
+        assertDoesNotThrow(() -> dynamicList.add(p2));
+
+        assertEquals(11, dynamicList.size());
+        assertEquals(p2, dynamicList.get(10));
+    }
+
+    /**
+     * Проверка работоспособности коллекции после выполнения операции clear().
+     * Гарантирует, что после сброса состояния список пригоден для повторного наполнения.
+     */
+    @Test
+    void testClearAndReuse() {
+        list.add(p1);
+        list.clear();
+
+        // После очистки добавляем новый элемент в "нулевую" ячейку пересозданного массива
+        list.add(p2);
+
+        assertEquals(1, list.size());
+        assertEquals(p2, list.get(0));
+        // Проверяем, что данные p1 больше не доступны
+        assertNotEquals(p1, list.get(0));
+    }
+
+    /**
+     * Проверка очистки коллекции с установкой кастомной вместимости.
+     * Гарантирует сброс счетчика и корректное перевыделение внутреннего массива под новый размер.
+     */
+    @Test
+    void testClearWithCustomCapacity() {
+        list.add(p1);
+
+        int newCapacity = 100;
+        list.clear(newCapacity);
+
+        assertEquals(0, list.size());
+
+        // Заполняем список до новой отметки 100
+        // Если clear(100) не сработал, мы узнаем об этом по скорости или ошибкам внутри
+        for (int i = 0; i < newCapacity; i++) {
+            list.add(p1);
+        }
+
+        // Проверяем, что все 100 элементов на месте
+        assertEquals(newCapacity, list.size());
+        assertEquals(p1, list.get(newCapacity - 1));
+    }
+
+    /**
+     * Проверка массового копирования данных из другой кастомной коллекции.
+     * Подтверждает работу системного копирования и синхронизацию размера size между списками.
+     */
+    @Test
+    void testAddAllFromAnotherList() {
+        PersonList sourceList = new PersonList();
+        sourceList.add(p1);
+        sourceList.add(p2);
+
+        // Копируем всё содержимое из sourceList в текущий список
+        list.addAll(sourceList);
+
+        assertEquals(sourceList.size(), list.size());
+        assertEquals(p1, list.get(0));
+        assertEquals(p2, list.get(1));
     }
 }

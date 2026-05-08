@@ -24,7 +24,12 @@ public class QuickSort extends AbstractQuickSort {
      */
     @Override
      int partition(PersonList list, int low, int high) {
-        // По схеме Ломуто опорным элементом (pivot) всегда выступает последний элемент диапазона
+        // Выбор центрального элемента в качестве опорного и перенос его в конец
+        // Это предотвращает переполнение стека (StackOverflowError) на больших или упорядоченных списках
+        int middle = low + (high - low) / 2;
+        swap(list, middle, high);
+
+        // По схеме Ломуто опорным элементом (pivot) теперь выступает перенесенный в конец элемент
         Person pivot = list.get(high);
 
         // Индекс 'i' указывает на границу элементов, которые меньше или равны pivot
