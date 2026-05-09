@@ -51,11 +51,10 @@ public class Person {
 
     @Override
     public String toString() {
-        return "Person{" +
-                "lastName='" + lastName + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", year=" + year +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append(lastName).append(" ").append(firstName).append(" ");
+        sb.append(year);
+        return sb.toString();
     }
     
     @Override
