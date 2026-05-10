@@ -30,7 +30,7 @@ public class RandomInput implements InputStrategy {
 
         System.out.print("Введите кол-во человек: ");
         int size = scanner.nextInt();
-        scanner.close();
+        // scanner.close();
         if (size <= 0) {
             throw new IllegalArgumentException("Size must be positive");
         }

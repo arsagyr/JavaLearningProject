@@ -3,6 +3,7 @@ package ru.javastudy.input;
 import ru.javastudy.models.Person;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class PersonLoader {
     private final InputStrategy strategy;
