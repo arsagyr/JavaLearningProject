@@ -1,10 +1,8 @@
 all:
-	mvn clean
-	mvn compile
-	mvn package
+	make run
 clean:
 	mvn clean
-test:
+run:
 	mvn clean
 	mvn compile
 	mvn exec:java -Dexec.mainClass="ru.javastudy.app.Main"

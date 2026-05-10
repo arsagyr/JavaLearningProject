@@ -27,39 +27,47 @@ public class Main {
             System.out.println("2 - чтобы ввести данные случайно");
             System.out.println("3 - чтобы ввести данные по файлу");
             System.out.println("4 - чтобы вывести данные");
+            System.out.println("5 - чтобы отсортировать данные");
 
             System.out.println("0 - чтобы остановить программу");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
+            String choice = scanner.next();
+            scanner.nextLine();  
 
             switch (choice) {
-                case 1:
+                case "1":
                     inputStrategy = new ConsoleInput(scanner);
                     persons = inputStrategy.load();
                     isFull = true;
                     System.out.print("Список заполнен\n");
                     break;
-                case 2:
+                case "2":
                     inputStrategy = new RandomInput(scanner);
                     persons = inputStrategy.load();
                     isFull = true;
                     System.out.print("Список заполнен\n");
                     break;
-                case 3:
+                case "3":
                     inputStrategy = new ReadFromFile(scanner);
                     persons = inputStrategy.load();                                        
                     isFull = true;
                     System.out.print("Список заполнен\n");
                     break;
-                case 4:
+                case "4":
                     if (isFull){
                         persons.stream().forEach(System.out::println);
                     } else {
-                        System.out.print("Список не был заполнен");
+                        System.out.print("Список не был заполнен\n");
                     }
                     break;
-                case 0:
+                case "5":
+                    if (isFull){
+                        //Функция сортировки
+                    } else {
+                        System.out.print("Список не был заполнен\n");
+                    }
+                    break;
+                case "0":
                     System.out.println("Программа завершена.");
                     isRunning = false;
                     break;

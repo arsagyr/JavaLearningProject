@@ -41,10 +41,6 @@ public class ConsoleInput   implements InputStrategy {
                     .year(year)
                     .build());
         }
-        // scanner.close();
         return persons;
     }
-    // public List<Person> load(String size) {
-    //     return List.of();
-    // }
 }

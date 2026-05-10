@@ -29,11 +29,9 @@ public class ReadFromFile implements InputStrategy {
             }
             String firstLine = scanner.nextLine().trim();
 
-                // Формат без числа: первая строка — уже данные
                 Person firstPerson = parsePersonFromLine(firstLine);
                 personList.add(firstPerson);
 
-                // Читаем остальные строки до конца файла
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine().trim();
                     if (line.isEmpty()) {
