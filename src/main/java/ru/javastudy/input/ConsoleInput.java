@@ -8,9 +8,11 @@ import java.util.Scanner;
 
 public class ConsoleInput   implements InputStrategy {
     private final Scanner scanner;
+    private final int size;
 
-    public ConsoleInput( Scanner scanner) {
+    public ConsoleInput(int size, Scanner scanner) {
         this.scanner = scanner;
+        this.size = size;
     }
 
     @Override
@@ -18,22 +20,19 @@ public class ConsoleInput   implements InputStrategy {
 
     List<Person> persons = new ArrayList<>();
 
-        System.out.print("Введите число людей: ");
-        int n = scanner.nextInt();
-        scanner.nextLine();
 
         String lastName, firstName;
         int year;
-        for (int i=0; i < n;i++){
+        for (int i = 0; i < this.size; i++){
             System.out.print("Введите фамилию: ");
-            lastName = scanner.nextLine();
+            lastName = this.scanner.nextLine();
             
             System.out.print("Введите имя: ");
-            firstName = scanner.nextLine();
+            firstName = this.scanner.nextLine();
             
             System.out.print("Введите год рождения: ");
-            year = scanner.nextInt();
-            scanner.nextLine();
+            year = this.scanner.nextInt();
+            this.scanner.nextLine();
 
             persons.add(Person.builder()
                     .firstName(firstName)

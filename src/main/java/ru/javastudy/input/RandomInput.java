@@ -9,9 +9,11 @@ import java.util.Scanner;
 
 public class RandomInput implements InputStrategy {
     private final Scanner scanner;
+    private final int size;
 
-    public RandomInput( Scanner scanner) {
+    public RandomInput(int size,  Scanner scanner) {
         this.scanner = scanner;
+        this.size = size;
     }
 
 
@@ -32,13 +34,6 @@ public class RandomInput implements InputStrategy {
 
     @Override
     public List<Person> load() {
-        System.out.print("Введите кол-во человек: ");
-        int size = scanner.nextInt();
-        // scanner.close();
-        if (size <= 0) {
-            throw new IllegalArgumentException("Size must be positive");
-        }
-        
         List<Person> persons = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {

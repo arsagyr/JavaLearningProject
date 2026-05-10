@@ -11,6 +11,8 @@ import ru.javastudy.input.ConsoleInput;
 
 import ru.javastudy.input.ReadFromFile;
 
+
+
 public class Main {
 
     public static void main(String[] args) {
@@ -20,7 +22,8 @@ public class Main {
         List<Person> persons = null;
         Scanner scanner = new Scanner(System.in);
         InputStrategy inputStrategy;
-        
+        int size;
+
         while (isRunning) {
             System.out.println("Введите число:");
             System.out.println("1 - чтобы ввести данные вручную");
@@ -36,13 +39,15 @@ public class Main {
 
             switch (choice) {
                 case "1":
-                    inputStrategy = new ConsoleInput(scanner);
+                    size = inputInt(scanner);
+                    inputStrategy = new ConsoleInput(size, scanner);
                     persons = inputStrategy.load();
                     isFull = true;
                     System.out.print("Список заполнен\n");
                     break;
                 case "2":
-                    inputStrategy = new RandomInput(scanner);
+                    size = inputInt(scanner);
+                    inputStrategy = new RandomInput(size, scanner);
                     persons = inputStrategy.load();
                     isFull = true;
                     System.out.print("Список заполнен\n");
@@ -78,5 +83,14 @@ public class Main {
         scanner.close();
     }
 
+    public static int inputInt(Scanner scanner){ 
+        System.out.print("Введите число людей: ");
+        int size = scanner.nextInt();
+        if (size <= 0) {
+            throw new IllegalArgumentException("Введите натуральное число");
+        }
+        scanner.nextLine();
+        return size;
+    }
 
 }
