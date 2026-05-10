@@ -30,11 +30,11 @@ public class RandomInput implements InputStrategy {
 
         System.out.print("Введите кол-во человек: ");
         int size = scanner.nextInt();
-
+        scanner.close();
         if (size <= 0) {
             throw new IllegalArgumentException("Size must be positive");
         }
-
+        
         List<Person> persons = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {
@@ -49,6 +49,7 @@ public class RandomInput implements InputStrategy {
                     .year(year)
                     .build());
         }
+        
         return persons;
     }
 
