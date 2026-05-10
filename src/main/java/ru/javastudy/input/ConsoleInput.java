@@ -7,12 +7,16 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleInput   implements InputStrategy {
+    private final Scanner scanner;
+
+    public ConsoleInput( Scanner scanner) {
+        this.scanner = scanner;
+    }
+
     @Override
     public List<Person> load() {
 
     List<Person> persons = new ArrayList<>();
-
-        Scanner scanner = new Scanner(System.in);
 
         System.out.print("Введите число людей: ");
         int n = scanner.nextInt();

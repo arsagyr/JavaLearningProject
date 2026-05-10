@@ -8,6 +8,12 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class RandomInput implements InputStrategy {
+    private final Scanner scanner;
+
+    public RandomInput( Scanner scanner) {
+        this.scanner = scanner;
+    }
+
 
     private static final String[] SYLLABLES = {
             "мир", "бор", "дар", "вол", "гор",
@@ -26,8 +32,6 @@ public class RandomInput implements InputStrategy {
 
     @Override
     public List<Person> load() {
-        Scanner scanner = new Scanner(System.in);
-
         System.out.print("Введите кол-во человек: ");
         int size = scanner.nextInt();
         // scanner.close();

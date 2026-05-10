@@ -8,21 +8,20 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ReadFromFile implements InputStrategy {
-    // private final String filename;
+    private final Scanner scanner;
 
-    // public ReadFromFile(String filename) {
-    //     this.filename = filename;
-    // }
+    public ReadFromFile( Scanner scanner) {
+        this.scanner = scanner;
+    }
 
     @Override
     public List<Person> load() {
         List<Person> personList = new ArrayList<>();
 
-        Scanner s = new Scanner(System.in);
         System.out.print("Введите название файла: ");
-        String filename = s.next();
-        // s.nextLine();
-        s.close();
+        String filename = scanner.next();
+        scanner.nextLine();
+
 
         try (Scanner scanner = new Scanner(new File(filename))) {
             if (!scanner.hasNextLine()) {

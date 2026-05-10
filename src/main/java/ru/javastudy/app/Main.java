@@ -35,19 +35,19 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    inputStrategy = new ConsoleInput();
+                    inputStrategy = new ConsoleInput(scanner);
                     persons = inputStrategy.load();
                     isFull = true;
                     System.out.print("Список заполнен\n");
                     break;
                 case 2:
-                    inputStrategy = new RandomInput();
+                    inputStrategy = new RandomInput(scanner);
                     persons = inputStrategy.load();
                     isFull = true;
                     System.out.print("Список заполнен\n");
                     break;
                 case 3:
-                    inputStrategy = new ReadFromFile();
+                    inputStrategy = new ReadFromFile(scanner);
                     persons = inputStrategy.load();                                        
                     isFull = true;
                     System.out.print("Список заполнен\n");
