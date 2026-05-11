@@ -25,7 +25,7 @@ public class PersonList {
      */
     public PersonList(int initialCapacity) {
         if (initialCapacity <= 0) {
-            System.out.println("Некорректный размер списка: " + initialCapacity + ". Установлен размер по умолчанию: " + DEFAULT_CAPACITY);
+            System.err.println("Некорректный размер списка: " + initialCapacity + ". Установлен размер по умолчанию: " + DEFAULT_CAPACITY);
             this.elements = new Person[DEFAULT_CAPACITY];
         } else {
             this.elements = new Person[initialCapacity];
@@ -95,17 +95,17 @@ public class PersonList {
     public Person get(int index) {
         // Защита от работы с пустой коллекцией
         if (size == 0) {
-            System.out.println("Список пуст. Возвращен null.");
+            System.err.println("Список пуст. Возвращен null.");
             return null;
         }
         // Коррекция отрицательного индекса — возвращается первый элемент
         if (index < 0) {
-            System.out.println("Индекс меньше нуля: " + index + ". Возвращен первый элемент.");
+            System.err.println("Индекс меньше нуля: " + index + ". Возвращен первый элемент.");
             return elements[0];
         }
         // Коррекция индекса за пределами размера — возвращается последний добавленный элемент
         if (index >= size) {
-            System.out.println("Индекс " + index + " за пределами размера (" + size + "). Возвращен последний элемент.");
+            System.err.println("Индекс " + index + " за пределами размера (" + size + "). Возвращен последний элемент.");
             return elements[size - 1];
         }
         return elements[index];
@@ -118,16 +118,16 @@ public class PersonList {
     public void set(int index, Person person) {
         // Защита от записи в пустую коллекцию
         if (size == 0) {
-            System.out.println("Список пуст. Невозможно перезаписать элемент.");
+            System.err.println("Список пуст. Невозможно перезаписать элемент.");
             return;
         }
         // Коррекция отрицательного индекса — перезаписывается первый элемент
         if (index < 0) {
-            System.out.println("Индекс меньше нуля: " + index + ". Перезаписан первый элемент.");
+            System.err.println("Индекс меньше нуля: " + index + ". Перезаписан первый элемент.");
             elements[0] = person;
         } else if (index >= size) {
             // Коррекция индекса за пределами размера — перезаписывается последний добавленный элемент
-            System.out.println("Индекс " + index + " за пределами размера (" + size + "). Перезаписан последний элемент.");
+            System.err.println("Индекс " + index + " за пределами размера (" + size + "). Перезаписан последний элемент.");
             elements[size - 1] = person;
         } else {
             // Штатная запись при валидном индексе

@@ -1,5 +1,7 @@
 package ru.javastudy.models;
 
+import java.util.regex.Pattern;
+
 public class Person {
     private int year;      // год рождения
     private String lastName;    // фамилия
@@ -80,35 +82,76 @@ public class Person {
         private int year;
         private String lastName;
         private String firstName;
-        
-        public Builder year(int year) {
-            this.year = year;
-            return this;
-        }
-        
-        public Builder lastName(String lastName) {
-            this.lastName = lastName;
-            return this;
-        }
-        
-        public Builder firstName(String firstName) {
-            this.firstName = firstName;
+
+        // Строгая проверка: начинается с буквы, разделители (пробел/дефис) только внутри
+        private static final Pattern VALID_NAME_PATTERN =
+                Pattern.compile("^[а-яА-ЯёЁ]+(?:[\\s-][а-яА-ЯёЁ]+)*$");
+        // Фильтр для удаления всего, кроме разрешенного
+        private static final Pattern INVALID_CHAR_FILTER =
+                Pattern.compile("[^а-яА-ЯёЁ\\s-]");
+        // Удаление повторяющихся пробелов и дефисов
+        private static final Pattern MULTI_SEPARATOR_FILTER =
+                Pattern.compile("[\\s-]{2,}");
+
+        /**
+         * Установка года с проверкой диапазона 1900-2026.
+         * При нарушении границ срабатывает "магнитный" год (1989) для сохранения стабильности системы.
+         * и сбора невалидных данных по году в одном месте для возможного анализа
+         */
+        public Person.Builder year(int year) {
+            if (year < 1900 || year > 2026) {
+                System.err.println("\nГод " + year + " вне диапазона (1900 - 2026). Установлено: 1989.");
+                this.year = 1989;
+            } else {
+                this.year = year;
+            }
             return this;
         }
 
-        
-        // Метод для валидации и создания объекта Person
+        public Person.Builder lastName(String lastName) {
+            this.lastName = normalize(lastName, "Фамилия");
+            return this;
+        }
+
+        public Person.Builder firstName(String firstName) {
+            this.firstName = normalize(firstName, "Имя");
+            return this;
+        }
+
+        /**
+         * Метод нормализации входных данных.
+         * Гарантирует получение валидных данных даже при подаче мусора на вход.
+         * Если чистка не оставляет букв — возвращает дефолтное значение
+         * для каждого поля (1989, Фамилия_Unknown, Имя_Unknown).
+         */
+        private String normalize(String value, String type) {
+            if (value == null || value.trim().isEmpty()) {
+                System.err.println("\n" + type + " пуста. Установлено: " + type + "_Unknown.");
+                return type + "_Unknown";
+            }
+
+            String result = value.trim();
+
+            // Если строка не проходит строгую проверку — чистим
+            if (!VALID_NAME_PATTERN.matcher(result).matches()) {
+                System.err.println("\nКорректировка поля " + type + " [" + value + "].");
+                // Удаляем мусор
+                result = INVALID_CHAR_FILTER.matcher(result).replaceAll("");
+                // Удаляем двойные пробелы/дефисы
+                result = MULTI_SEPARATOR_FILTER.matcher(result).replaceAll(" ").trim();
+                // Удаляем дефисы и пробелы по краям, которые могли там остаться или появиться после чистки.
+                        result = result.replaceAll("^[\\s-]+|[\\s-]+$", "");
+                // Проверяем, осталась ли хотя бы одна буква
+                if (result.isEmpty() || !result.matches(".*[а-яА-ЯёЁ].*")) {
+                    System.err.println("\n" + type + " не содержит букв. Установлено: " + type + "_Unknown.");
+                    return type + "_Unknown";
+                }
+            }
+            return result;
+        }
+
+        // Метод для создания объекта Person
         public Person build() {
-            if (lastName == null || lastName.trim().isEmpty()) {
-                throw new IllegalStateException("LastName cannot be null or empty");
-            }
-            if (firstName == null || firstName.trim().isEmpty()) {
-                throw new IllegalStateException("FirstName cannot be null or empty");
-            }
-            if (year < 1900 || year > 2026) {
-                throw new IllegalStateException("Year must be between 1900 and 2026");
-            }
-            
             return new Person(this);
         }
     }
