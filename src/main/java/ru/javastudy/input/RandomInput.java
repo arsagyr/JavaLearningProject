@@ -12,20 +12,25 @@ public class RandomInput implements InputStrategy {
     private static final String[] SYLLABLES = {
             "мир", "бор", "дар", "вол", "гор",
             "род", "лад", "вод", "сол", "све",
-            "зор", "зар", "яр",  "вла",
+            "зор", "зар", "яр", "вла",
             "мор", "мол", "жар", "кар",
             "мак", "рак", "лак", "вал",
             "сар", "тан", "сан", "хор",
             "пер", "тер", "дер", "пор"
     };
 
-    private static final String[] LASTNAME_ENDINGS = {"ов", "ев", "ин"};
-
+    private static final String[] LASTNAME_ENDINGS = {
+            "ов", "ев", "ин"
+    };
 
     private final Random random = new Random();
 
+    private final String[] FIRST_NAMES = generateFirstNames();
+    private final String[] LAST_NAMES = generateLastNames();
+
     @Override
     public List<Person> load() {
+
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Введите кол-во человек: ");
@@ -35,44 +40,63 @@ public class RandomInput implements InputStrategy {
             throw new IllegalArgumentException("Size must be positive");
         }
 
-        List<Person> persons = new ArrayList<>();
+        List<Person> persons = new ArrayList<>(size);
 
         for (int i = 0; i < size; i++) {
 
-            String firstName = generateFirstName();
-            String lastName = generateLastName();
+            String firstName = FIRST_NAMES[random.nextInt(FIRST_NAMES.length)];
+            String lastName = LAST_NAMES[random.nextInt(LAST_NAMES.length)];
+
             int year = 1900 + random.nextInt(127);
 
-            persons.add(Person.builder()
-                    .firstName(capitalize(firstName))
-                    .lastName(capitalize(lastName))
-                    .year(year)
-                    .build());
+            persons.add(new Person(
+                    year,
+                    lastName,
+                    firstName
+            ));
         }
+
         return persons;
     }
 
-    private String generateFirstName() {
-        return generateWorld(2);
-    }
+    private String[] generateFirstNames() {
 
-    private String generateLastName() {
-        return generateWorld(2) + LASTNAME_ENDINGS[random.nextInt(LASTNAME_ENDINGS.length)];
-    }
+        List<String> names = new ArrayList<>();
 
-    private String generateWorld(int syllablesCount) {
-        StringBuilder word = new StringBuilder();
-        for (int i = 0; i < syllablesCount; i++) {
-            word.append(SYLLABLES[random.nextInt(SYLLABLES.length)]);
+        for (String s1 : SYLLABLES) {
+            for (String s2 : SYLLABLES) {
+
+                names.add(capitalize(s1 + s2).intern());
+            }
         }
-        return word.toString();
+
+        return names.toArray(new String[0]);
+    }
+
+    private String[] generateLastNames() {
+
+        List<String> names = new ArrayList<>();
+
+        for (String s1 : SYLLABLES) {
+            for (String s2 : SYLLABLES) {
+                for (String ending : LASTNAME_ENDINGS) {
+
+                    names.add(
+                            capitalize(s1 + s2 + ending).intern()
+                    );
+                }
+            }
+        }
+
+        return names.toArray(new String[0]);
     }
 
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) {
             return str;
         }
-        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
-    }
 
+        return Character.toUpperCase(str.charAt(0))
+                + str.substring(1).toLowerCase();
+    }
 }
