@@ -1,13 +1,19 @@
 package ru.javastudy.input;
 
 import ru.javastudy.models.Person;
-
+import ru.javastudy.collections.PersonList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
 public class RandomInput implements InputStrategy {
+    private final int size;
+
+    public RandomInput(int size) {
+        this.size = size;
+    }
+
 
     private static final String[] SYLLABLES = {
             "мир", "бор", "дар", "вол", "гор",
@@ -25,17 +31,7 @@ public class RandomInput implements InputStrategy {
     private final Random random = new Random();
 
     @Override
-    public List<Person> load() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Введите кол-во человек: ");
-        int size = scanner.nextInt();
-
-        if (size <= 0) {
-            throw new IllegalArgumentException("Size must be positive");
-        }
-
-        List<Person> persons = new ArrayList<>();
+    public void load(PersonList persons) {
 
         for (int i = 0; i < size; i++) {
 
@@ -49,7 +45,6 @@ public class RandomInput implements InputStrategy {
                     .year(year)
                     .build());
         }
-        return persons;
     }
 
     private String generateFirstName() {
