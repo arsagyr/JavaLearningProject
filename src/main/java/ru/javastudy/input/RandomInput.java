@@ -1,18 +1,16 @@
 package ru.javastudy.input;
 
 import ru.javastudy.models.Person;
-
+import ru.javastudy.collections.PersonList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
 public class RandomInput implements InputStrategy {
-    private final Scanner scanner;
     private final int size;
 
-    public RandomInput(int size,  Scanner scanner) {
-        this.scanner = scanner;
+    public RandomInput(int size) {
         this.size = size;
     }
 
@@ -33,8 +31,7 @@ public class RandomInput implements InputStrategy {
     private final Random random = new Random();
 
     @Override
-    public List<Person> load() {
-        List<Person> persons = new ArrayList<>();
+    public void load(PersonList persons) {
 
         for (int i = 0; i < size; i++) {
 
@@ -48,8 +45,6 @@ public class RandomInput implements InputStrategy {
                     .year(year)
                     .build());
         }
-        
-        return persons;
     }
 
     private String generateFirstName() {

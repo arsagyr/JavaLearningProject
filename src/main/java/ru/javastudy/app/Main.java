@@ -23,7 +23,7 @@ public class Main {
         System.out.println("Приветствую! Это программа ввода данных пользователей по фамилии, имени и году рождения.");
 
         List<Person> persons = null;
-        PersonList myPersons = null;
+        PersonList myPersons = new PersonList();
         Scanner scanner = new Scanner(System.in);
         InputStrategy inputStrategy;
         int size;
@@ -52,14 +52,14 @@ public class Main {
                     break;
                 case "2":
                     size = inputInt(scanner);
-                    inputStrategy = new RandomInput(size, scanner);
-                    persons = inputStrategy.load();
+                    inputStrategy = new RandomInput(size);
+                    inputStrategy.load(myPersons);
                     isFull = true;
                     System.out.print("Список заполнен\n");
                     break;
                 case "3":
                     inputStrategy = new ReadFromFile(scanner);
-                    persons = inputStrategy.load();                                        
+                    inputStrategy.load(myPersons);                                        
                     isFull = true;
                     System.out.print("Список заполнен\n");
                     break;

@@ -1,6 +1,7 @@
 package ru.javastudy.input;
 
 import ru.javastudy.models.Person;
+import ru.javastudy.collections.PersonList;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -15,9 +16,7 @@ public class ReadFromFile implements InputStrategy {
     }
 
     @Override
-    public List<Person> load() {
-        List<Person> personList = new ArrayList<>();
-
+    public void load(PersonList personList) {
         System.out.print("Введите название файла: ");
         String filename = scanner.next();
         scanner.nextLine();
@@ -25,7 +24,7 @@ public class ReadFromFile implements InputStrategy {
 
         try (Scanner scanner = new Scanner(new File(filename))) {
             if (!scanner.hasNextLine()) {
-                return personList; // пустой файл
+                // personList; // пустой файл
             }
             String firstLine = scanner.nextLine().trim();
 
@@ -43,7 +42,6 @@ public class ReadFromFile implements InputStrategy {
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Файл не найден: " + filename, e);
         }
-        return personList;
     }
 
     private Person parsePersonFromLine(String line) {
