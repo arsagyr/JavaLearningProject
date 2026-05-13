@@ -198,8 +198,8 @@ public class SortStrategiesTest {
             originalYears[i] = year;
             list.add(Person.builder()
                     .year(year)
-                    .lastName("Фамилия")
-                    .firstName("Имя")
+                    .lastName(("Фамилия").repeat(1 + (i / 100000)))
+                    .firstName(("Имя").repeat(1 + (i / 100000)))
                     .build());
         }
 

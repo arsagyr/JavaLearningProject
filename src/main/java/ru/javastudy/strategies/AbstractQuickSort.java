@@ -78,7 +78,7 @@ public abstract class AbstractQuickSort implements SortingStrategy {
      */
     protected void swap(PersonList list, int i, int j) {
         Person temp = list.getFast(i);
-        list.set(i, list.get(j));
-        list.set(j, temp);
+        list.setFast(i, list.getFast(j));
+        list.setFast(j, temp);
     }
 }
