@@ -1,5 +1,6 @@
 package ru.javastudy.input;
 
+import ru.javastudy.collections.PersonList;
 import ru.javastudy.models.Person;
 
 import java.util.ArrayList;
@@ -10,11 +11,9 @@ import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
 public class RandomInputWithStream implements InputStrategy {
-    private final Scanner scanner;
     private final int size;
 
-    public RandomInputWithStream(int size, Scanner scanner) {
-        this.scanner = scanner;
+    public RandomInputWithStream(int size) {
         this.size = size;
     }
 
@@ -35,14 +34,15 @@ public class RandomInputWithStream implements InputStrategy {
     private final Random random = new Random();
 
     @Override
-    public List<Person> load() {
+    public void load(PersonList personList ) {
         List<Person> persons = new ArrayList<>();
 
         //Поставил стрим вместо цикла for
 
-        return Stream.generate(this::generateRandomPerson)
+        persons = Stream.generate(this::generateRandomPerson)
                 .limit(size)  // Берем только size элементов
                 .collect(Collectors.toList());
+        personList = new PersonList(persons);
     }
     //Новый метод для генерации одного случайного Person
     private Person generateRandomPerson() {
