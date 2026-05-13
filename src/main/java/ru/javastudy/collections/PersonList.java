@@ -18,6 +18,11 @@ public class PersonList implements List<Person> {
     public PersonList() {
         this.elements = new Person[DEFAULT_CAPACITY];
     }
+    // Конструктор создающий из спика кастомный класс
+    public PersonList(List<Person> persons) {
+        this.elements = persons.toArray(new Person[0]);
+
+    }
 
     /**
      * Создает список с заданной вместимостью.

@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
  * Работает напрямую с кастомной коллекцией PersonList.
  * Реализует заполнение кастомной коллекции PersonList через Stream API (ТЗ п.3).
  */
-public class ConsoleInput {
+public class ConsoleInput implements InputStrategy {
     private final Scanner scanner;
     private final int size;
 
@@ -53,6 +53,18 @@ public class ConsoleInput {
             }
             System.out.println("\nОшибка! Допустимы только русские буквы, пробел и дефис.");
         }
+    }
+
+    public void load(PersonList persons) {
+        // Cборка объектов через Stream API
+        IntStream.range(0, this.size)
+                .peek(i -> System.out.println("\n--- Ввод данных человека [" + (i + 1) + "/" + size + "] ---"))
+                .mapToObj(i -> Person.builder()
+                        .lastName(validString("Введите фамилию (только русские буквы): "))
+                        .firstName(validString("Введите имя (только русские буквы): "))
+                        .year(validYear("Введите год рождения (1900-2026): "))
+                        .build())
+                .forEach(persons::add);
     }
 
     /**
