@@ -23,6 +23,7 @@
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -31,6 +32,17 @@
                     <release>${maven.compiler.release}</release>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+
+                <configuration>
+                    <mainClass>ru.javastudy.app.Main</mainClass>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
