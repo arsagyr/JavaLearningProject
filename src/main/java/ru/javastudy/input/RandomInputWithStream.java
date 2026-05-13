@@ -1,16 +1,19 @@
 package ru.javastudy.input;
 
-import ru.javastudy.models.Person;
 import ru.javastudy.collections.PersonList;
+import ru.javastudy.models.Person;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
-public class RandomInput implements InputStrategy {
+public class RandomInputWithStream implements InputStrategy {
     private final int size;
 
-    public RandomInput(int size) {
+    public RandomInputWithStream(int size) {
         this.size = size;
     }
 
@@ -31,20 +34,27 @@ public class RandomInput implements InputStrategy {
     private final Random random = new Random();
 
     @Override
-    public void load(PersonList persons) {
+    public void load(PersonList personList ) {
+        List<Person> persons = new ArrayList<>();
 
-        for (int i = 0; i < size; i++) {
+        //Поставил стрим вместо цикла for
 
+        persons = Stream.generate(this::generateRandomPerson)
+                .limit(size)  // Берем только size элементов
+                .collect(Collectors.toList());
+        personList = new PersonList(persons);
+    }
+    //Новый метод для генерации одного случайного Person
+    private Person generateRandomPerson() {
             String firstName = generateFirstName();
             String lastName = generateLastName();
             int year = 1900 + random.nextInt(127);
 
-            persons.add(Person.builder()
+            return Person.builder()
                     .firstName(capitalize(firstName))
                     .lastName(capitalize(lastName))
                     .year(year)
-                    .build());
-        }
+                    .build();
     }
 
     private String generateFirstName() {

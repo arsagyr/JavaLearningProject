@@ -1,11 +1,7 @@
 package ru.javastudy.input;
 
-import ru.javastudy.models.Person;
-
-import java.util.List;
+import ru.javastudy.collections.PersonList;
 
 public interface InputStrategy {
-
-    List<Person> load();
-
+    void load(PersonList persons);
 }
