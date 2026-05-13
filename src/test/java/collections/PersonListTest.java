@@ -226,4 +226,178 @@ public class PersonListTest {
         assertEquals(p1, list.get(0));
         assertEquals(p2, list.get(1));
     }
+
+    /**
+     * Комплексный тест на одиночное и пакетное удаление элементов.
+     * Покрывает граничные случаи, сдвиг памяти, защиту от null и сжатие массива (trimCapacity).
+     */
+    @Test
+    void testComprehensiveRemovalAndCapacitySqueezing() {
+        // Убеждаемся, что на пустой коллекции методы возвращают безопасный дефолт
+        assertNull(list.remove(0));
+        assertNull(list.remove(-10));
+
+        // Наполняем список элементами (размер станет 6, емкость увеличится до 8)
+        PersonList heavyList = new PersonList(2);
+        Person extra1 = Person.builder().year(1990).lastName("А").firstName("А").build();
+        Person extra2 = Person.builder().year(1991).lastName("Б").firstName("Б").build();
+        Person extra3 = Person.builder().year(1992).lastName("В").firstName("В").build();
+        Person extra4 = Person.builder().year(1993).lastName("Г").firstName("Г").build();
+        heavyList.add(p1);      // 0
+        heavyList.add(p2);      // 1
+        heavyList.add(extra1);  // 2
+        heavyList.add(extra2);  // 3
+        heavyList.add(extra3);  // 4
+        heavyList.add(extra4);  // 5
+
+        // Тестируем сглаживание некорректных индексов при удалении
+        assertEquals(p1, heavyList.remove(-5));        // Сгладит в 0, удалит p1
+        assertEquals(extra4, heavyList.remove(100));    // Сгладит в последний, удалит extra4
+
+        // Проверяем, что массив сдвинулся корректно и дыр нет
+        assertEquals(p2, heavyList.get(0));
+        assertEquals(extra3, heavyList.get(heavyList.size() - 1));
+
+        // Защита от null и отсутствующих элементов
+        assertFalse(heavyList.remove((Object) null));
+
+        Person stranger = Person.builder().year(1900).lastName("Чужой").firstName("Ч").build();
+        assertFalse(heavyList.remove(stranger));
+
+        // Пакетное удаление removeAll
+        java.util.List<Person> toRemove = java.util.List.of(p2, extra2);
+        assertTrue(heavyList.removeAll(toRemove));
+
+        // Проверяем остаток и автоматическую отмену при null-коллекции
+        assertFalse(heavyList.removeAll(null));
+        assertEquals(2, heavyList.size());
+        assertEquals(extra1, heavyList.get(0));
+        assertEquals(extra3, heavyList.get(1));
+    }
+
+    /**
+     * Комплексный тест на метод фильтрации retainAll (работа в логике rewrite).
+     * Проверяет фильтрацию за один проход, защиту от null и полное пересоздание хранилища.
+     */
+    @Test
+    void testRetainAllRewriteLogic() {
+        list.add(p1);
+        list.add(p2);
+        Person p3 = Person.builder().year(1988).lastName("Попов").firstName("П").build();
+        list.add(p3);
+
+        // Передача null-коллекции должна заблокировать изменения
+        assertFalse(list.retainAll(null));
+        assertEquals(3, list.size());
+
+        // Оставляем p1 и p3, удаляя p2
+        java.util.List<Person> target = java.util.List.of(p1, p3);
+        assertTrue(list.retainAll(target));
+
+        // Проверяем, что массив полностью перезаписался, а хвост занулен
+        assertEquals(2, list.size());
+        assertEquals(p1, list.get(0));
+        assertEquals(p3, list.get(1));
+
+        // Если совпадений нет, коллекция не должна мутировать
+        assertFalse(list.retainAll(target));
+    }
+
+    /**
+     * Комплексный тест на извлечение подсписка subList.
+     * Проверяет сглаживание кривых/перепутанных индексов и копирование без двойного жора памяти.
+     */
+    @Test
+    void testSubListBoundaryHandlingAndCopying() {
+        list.add(p1);
+        list.add(p2);
+
+        // Тест 13: Перепутанные или вылетевшие за край индексы
+        java.util.List<Person> sub1 = list.subList(-10, 100); // Отрежет строго от 0 до size
+        assertEquals(2, sub1.size());
+        assertEquals(p1, sub1.get(0));
+        assertEquals(p2, sub1.get(1));
+
+        java.util.List<Person> sub2 = list.subList(2, 0); // Конечный меньше начального -> сбросит end в start
+        assertEquals(0, sub2.size());
+        assertTrue(sub2.isEmpty());
+    }
+
+    /**
+     * Комплексный тест на выгрузку в массивы через оба метода toArray.
+     * Проверяет работу без рефлексии, обработку null-ссылок и автоматическое выделение Person[].
+     */
+    @Test
+    void testToArray() {
+        list.add(p1);
+        list.add(p2);
+
+        // Базовый toArray()
+        Object[] objects = list.toArray();
+        assertEquals(2, objects.length);
+        assertEquals(p1, objects[0]);
+
+        // Передача null массива в параметризованный toArray
+        Person[] nullHandled = list.toArray((Person[]) null);
+        assertNotNull(nullHandled);
+        assertEquals(2, nullHandled.length);
+
+        // Передача массива меньшего размера (должен выделиться новый Person[] без ClassCastException)
+        Person[] smallArray = new Person[0];
+        Person[] result = list.toArray(smallArray);
+
+        assertEquals(2, result.length);
+        assertEquals(p1, result[0]);
+        assertEquals(p2, result[1]);
+
+        // Передача массива большего размера (проверка зануления элемента за хвостом)
+        Person[] bigArray = new Person[5];
+        list.toArray(bigArray);
+        assertNull(bigArray[2]);
+    }
+
+    /**
+     * Глобальный тест на пуленепробиваемый ListIterator и шаблон EMPTY_PERSON.
+     * Проверяет полный проход итератора, маркер ошибки, модификации через set/add/remove и блокировку двойного удаления.
+     */
+    @Test
+    void testListIteratorWithNullObjectPattern() {
+        list.add(p1);
+        list.add(p2);
+
+        java.util.ListIterator<Person> it = list.listIterator();
+
+        // Проверка сглаживания при инициализации с кривым индексом
+        java.util.ListIterator<Person> badIt = list.listIterator(-5);
+        assertTrue(badIt.hasNext());
+
+        // Проход до упора
+        assertEquals(p1, it.next());
+        assertEquals(p2, it.next());
+
+        // Лишний вызов next() после окончания данных (должен выдать EMPTY_PERSON)
+        Person errorPerson = it.next();
+        assertNotNull(errorPerson);
+        assertEquals("Выход", errorPerson.getLastName());
+        assertEquals("ЗаПределы", errorPerson.getFirstName());
+        assertEquals(1899, errorPerson.getYear());
+
+        // Модификации через итератор
+        java.util.ListIterator<Person> modifyIt = list.listIterator();
+        assertEquals(p1, modifyIt.next());
+
+        // Тестируем iterator.set()
+        Person p3 = Person.builder().year(1990).lastName("Тестовый").firstName("Т").build();
+        modifyIt.set(p3);
+        assertEquals(p3, list.get(0));
+
+        // Тестируем двойной remove() подряд без промежуточного next() (должен заблокировать операцию)
+        modifyIt.remove(); // Удалит первый элемент (p3), размер станет 1
+        assertEquals(1, list.size());
+
+        // Повторный вызов без next() вызовет ошибку в лог, но не уронит программу
+        assertDoesNotThrow(modifyIt::remove);
+        assertEquals(1, list.size()); // Размер не изменился, данные не повредились
+    }
+
 }

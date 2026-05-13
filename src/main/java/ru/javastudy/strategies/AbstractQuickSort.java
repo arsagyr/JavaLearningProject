@@ -48,9 +48,18 @@ public abstract class AbstractQuickSort implements SortingStrategy {
      * @return отрицательное число, если p1 < p2; 0, если p1 == p2; положительное число, если p1 > p2
      */
     protected int compare(Person p1, Person p2) {
+        if (p1 == p2) {
+            return 0;
+        }
+
         // Первичное сравнение по годам рождения
         if (p1.getYear() != p2.getYear()) {
             return Integer.compare(p1.getYear(), p2.getYear());
+        }
+
+        // Быстрая проверка на равенство строк по ссылкам (String Pool) перед тяжелым compareTo
+        if (p1.getLastName() == p2.getLastName() && p1.getFirstName() == p2.getFirstName()) {
+            return 0;
         }
 
         // Вторичное сравнение по фамилии в алфавитном порядке
@@ -68,7 +77,7 @@ public abstract class AbstractQuickSort implements SortingStrategy {
      * Сортировка выполняется на месте (in-place) без выделения дополнительной памяти под массивы.
      */
     protected void swap(PersonList list, int i, int j) {
-        Person temp = list.get(i);
+        Person temp = list.getFast(i);
         list.set(i, list.get(j));
         list.set(j, temp);
     }

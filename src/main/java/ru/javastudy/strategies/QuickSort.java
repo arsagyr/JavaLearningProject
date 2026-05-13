@@ -30,7 +30,7 @@ public class QuickSort extends AbstractQuickSort {
         swap(list, middle, high);
 
         // По схеме Ломуто опорным элементом (pivot) теперь выступает перенесенный в конец элемент
-        Person pivot = list.get(high);
+        Person pivot = list.getFast(high);
 
         // Индекс 'i' указывает на границу элементов, которые меньше или равны pivot
         int i = low - 1;
@@ -38,7 +38,7 @@ public class QuickSort extends AbstractQuickSort {
         // Итератор 'j' сканирует подмассив от начального элемента до опорного
         for (int j = low; j < high; j++) {
             // Если текущий элемент меньше или равен опорному, расширяем левую зону
-            if (compare(list.get(j), pivot) <= 0) {
+            if (compare(list.getFast(j), pivot) <= 0) {
                 i++;
                 swap(list, i, j); // Перемещаем меньший элемент в левую часть
             }

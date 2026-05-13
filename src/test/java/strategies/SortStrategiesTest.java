@@ -179,15 +179,26 @@ public class SortStrategiesTest {
     @Test
     void testEvenQuickSortUltraStress() {
         int count = 1_000_000;
-        // Инициализируем список сразу с нужным размером, чтобы не тратить время на расширение массива
         PersonList list = new PersonList(count);
 
+        // Буфер для эталонной проверки позиций
+        int[] originalYears = new int[count];
+        java.util.Random rnd = new java.util.Random(42); // Фиксированный сид для стабильности тестов
+
         for (int i = 0; i < count; i++) {
-            // Генерируем данные: половина четных, половина нечетных
-            int year = (i % 2 == 0) ? 2000 : 2001;
+            int year;
+            if (i % 2 == 0) {
+                // Генерируем случайные ЧЕТНЫЕ года в диапазоне 1900-2026
+                year = 1900 + rnd.nextInt(63) * 2;
+            } else {
+                // Генерируем случайные НЕЧЕТНЫЕ года
+                year = 1901 + rnd.nextInt(63) * 2;
+            }
+
+            originalYears[i] = year;
             list.add(Person.builder()
                     .year(year)
-                    .lastName("Фамилия_" + i)
+                    .lastName("Фамилия")
                     .firstName("Имя")
                     .build());
         }
@@ -195,12 +206,28 @@ public class SortStrategiesTest {
         SortingStrategy sorter = new EvenQuickSort();
 
         long start = System.currentTimeMillis();
-
+        // Проверяем, что миллион элементов не роняет стек рекурсии
         assertDoesNotThrow(() -> sorter.sort(list));
-
         long end = System.currentTimeMillis();
 
         System.out.println("Обработка 1 000 000 элементов заняла: " + (end - start) + " мс");
+
+        // ПРОВЕРКА 1: Общий размер не изменился
         assertEquals(count, list.size());
+
+        // ПРОВЕРКА 2: Проверяем целостность структуры и правильность сортировки
+        int lastEvenYear = -1;
+        for (int i = 0; i < count; i++) {
+            int currentYear = list.getFast(i).getYear();
+
+            if (i % 2 != 0) {
+                // Нечетные элементы обязаны остаться строго на своих исходных позициях!
+                assertEquals(originalYears[i], currentYear, "Нечетный элемент на индексе " + i + " сместился!");
+            } else {
+                // Четные элементы обязаны идти строго по возрастанию!
+                assertTrue(currentYear >= lastEvenYear, "Нарушен порядок сортировки четных элементов на индексе " + i);
+                lastEvenYear = currentYear;
+            }
+        }
     }
 }
