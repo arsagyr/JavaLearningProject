@@ -8,6 +8,7 @@ import ru.javastudy.input.InputStrategy;
 import ru.javastudy.input.PersonLoader;
 import ru.javastudy.input.RandomInput;
 import ru.javastudy.input.ConsoleInput;
+import ru.javastudy.output.WriteToFile;
 import ru.javastudy.strategies.EvenQuickSort;
 import ru.javastudy.strategies.QuickSort;
 import ru.javastudy.collections.PersonList;
@@ -59,8 +60,9 @@ public class Main {
                     }
                     break;
                 case "4":
-                    if (isFull) {
-                        //Здесь должна быть функция вывода в файл
+                    if (myPersons.size() > 0) {
+                        WriteToFile writer = new WriteToFile();
+                        writer.save(myPersons);
                     }
                     else System.out.print("Заполните список\n");
                     break;
