@@ -692,4 +692,58 @@ public class PersonList implements List<Person> {
     public boolean isEmpty() {
         return (size == 0);
     }
+
+    /**
+     * Описание типичной персоны.
+     */
+    public String getTypicalPersonaDescription() {
+        if (size == 0 || elements == null) {
+            return "Список персон пуст.";
+        }
+
+        int currentYear = java.time.Year.now().getValue(); // Динамический расчет (2026)
+
+        Map<String, Long> lastNames = new HashMap<>();
+        Map<String, Long> firstNames = new HashMap<>();
+        Map<Integer, Long> birthYears = new HashMap<>();
+
+        // Сбор статистики по всем элементам вашего массива
+        this.stream()
+                .filter(Objects::nonNull)
+                .forEach(p -> {
+                    String ln = p.getLastName();
+                    if (ln != null) {
+                        lastNames.merge(ln, 1L, Long::sum);
+                    }
+
+                    String fn = p.getFirstName();
+                    if (fn != null) {
+                        firstNames.merge(fn, 1L, Long::sum);
+                    }
+
+                    int y = p.getYear();
+                    birthYears.merge(y, 1L, Long::sum);
+                });
+
+        // Поиск самых популярных значений
+        String topLastName = lastNames.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("Фамилия_Unknown"); // [Page 16]
+
+        String topFirstName = firstNames.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("Имя_Unknown"); // [Page 16]
+
+        Integer topBirthYear = birthYears.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(1899); // Ваша маркерная точка отсчета [Page 1]
+
+        // Прямой математический расчет возраста без ветвлений
+        String ageOutput = String.valueOf(currentYear - topBirthYear);
+
+        return String.format("Меня зовут %s %s. Мне %s.", topLastName, topFirstName, ageOutput);
+    }
 }
