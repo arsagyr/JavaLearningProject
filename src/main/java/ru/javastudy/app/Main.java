@@ -22,7 +22,7 @@ import ru.javastudy.input.ReadFromFile;
 public class Main {
 
     public static void main(String[] args) {
-        boolean isRunning = true, isFull = false;
+        boolean isRunning = true;
         System.out.println("Приветствую! Это программа ввода данных пользователей по фамилии, имени и году рождения.");
 
         PersonList myPersons = new PersonList();
@@ -43,21 +43,21 @@ public class Main {
 
             switch (choice) {
                 case "1":
-                    isFull = chooseInput(scanner, myPersons);
+                    chooseInput(scanner, myPersons);
                     break;
                 case "2":
-                    if (isFull) chooseSort(scanner, myPersons);
+                    if (!myPersons.isEmpty()) chooseSort(scanner, myPersons);
                     else System.out.print("Заполните список\n");
                     break;
                 case "3":
-                    if (isFull){
+                    if (!myPersons.isEmpty()){
                         myPersons.stream().forEach(System.out::println);
                         System.out.println("\n--- Вывод данных завершен ---");
                     }  
                     else System.out.print("Заполните список\n");
                     break;
                 case "4":
-                    if (isFull) {
+                    if (!myPersons.isEmpty()) {
                         System.out.print("Введите имя файла для сохранения (по дефолту - 'persons.txt'): ");
                         String filename = scanner.nextLine().trim();
                         WriteToFile writer = new WriteToFile();
@@ -71,7 +71,7 @@ public class Main {
                     }
                     break;
                 case "6":
-                    if (isFull){
+                    if (!myPersons.isEmpty()){
                         Person target;
                         int upToThreads = 1;
                         PersonInput personInput = new PersonInput(scanner);
@@ -120,7 +120,7 @@ public class Main {
         return size;
     }
 
-    public static boolean chooseInput(Scanner scanner, PersonList personList){ 
+    public static void chooseInput(Scanner scanner, PersonList personList){ 
         System.out.println("Введите число:");
         System.out.println("1 - чтобы ввести данные вручную");
         System.out.println("2 - чтобы ввести данные случайно");
@@ -132,7 +132,6 @@ public class Main {
         String choice = scanner.next();
         scanner.nextLine();  
         int size;
-        boolean isFull = false;
         switch (choice) {
             case "1":
                 size = inputInt(scanner);
@@ -140,33 +139,28 @@ public class Main {
                 inputStrategy.load(personList);
                 if (personList.size() > 0) {
                     System.out.println("Список успешно заполнен");
-                    isFull = true;
                 }
                 break;
             case "2":
                 size = inputInt(scanner);
                 inputStrategy = new RandomInput(size);
                 inputStrategy.load(personList);
-                isFull = true;
                 break;
             case "3":
                 inputStrategy = new ReadFromFile(scanner);
                 inputStrategy.load(personList);     
                 if (personList.size() > 0) {
                     System.out.println("Список успешно заполнен");    
-                    isFull = true; 
                 }                       
                 break;
             case "4":
                 size = inputInt(scanner);
                 inputStrategy = new RandomInput(size);
-                inputStrategy.load(personList);  
-                isFull = true;                                      
+                inputStrategy.load(personList);                                     
                 break;
             default:
                 break;
         }
-        return isFull;
     }
 
         public static void chooseSort(Scanner scanner, PersonList personList){ 
