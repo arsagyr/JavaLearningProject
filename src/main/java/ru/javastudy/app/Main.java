@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import ru.javastudy.input.InputStrategy;
+import ru.javastudy.input.PersonInput;
 import ru.javastudy.input.PersonLoader;
 import ru.javastudy.input.RandomInput;
 import ru.javastudy.input.ConsoleInput;
@@ -12,6 +13,7 @@ import ru.javastudy.output.WriteToFile;
 import ru.javastudy.strategies.EvenQuickSort;
 import ru.javastudy.strategies.QuickSort;
 import ru.javastudy.collections.PersonList;
+import ru.javastudy.threads.NCounter;
 
 import ru.javastudy.input.ReadFromFile;
 
@@ -33,6 +35,7 @@ public class Main {
             System.out.println("3 - чтобы вывести данные");
             System.out.println("4 - чтобы сохранить данные в файл");
             System.out.println("5 - чтобы сбросить список");
+            System.out.println("6 - чтобы искать вхождения в списке");
             System.out.println("0 - чтобы остановить программу");
 
             String choice = scanner.next();
@@ -54,9 +57,11 @@ public class Main {
                     else System.out.print("Заполните список\n");
                     break;
                 case "4":
-                    if (isFull){
+                    if (isFull) {
+                        System.out.print("Введите имя файла для сохранения (по дефолту - 'persons.txt'): ");
+                        String filename = scanner.nextLine().trim();
                         WriteToFile writer = new WriteToFile();
-                        writer.save(myPersons);
+                        writer.save(myPersons, filename);  
                     }
                     else System.out.print("Заполните список\n");
                     break;
@@ -64,6 +69,21 @@ public class Main {
                     if (isSure(scanner)) {
                         myPersons = new PersonList();
                     }
+                    break;
+                case "6":
+                    if (isFull){
+                        Person target;
+                        int upToThreads = 1;
+                        PersonInput personInput = new PersonInput(scanner);
+                        target = personInput.load();
+                        try { 
+                            NCounter.countAndPrintOccurrence(myPersons, target, 1);
+                        } 
+                        catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else System.out.print("Заполните список\n");
                     break;
                 case "0":
                     System.out.println("Программа завершена.");
