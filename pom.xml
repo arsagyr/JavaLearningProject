@@ -43,6 +43,31 @@
                 </configuration>
             </plugin>
 
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.1.0</version>
+            <configuration>
+                <mainClass>ru.javastudy.app.Main</mainClass>
+            </configuration>
+            <!-- !!! НОВЫЙ БЛОК !!! -->
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                    <configuration>
+                        <systemProperties>
+                            <systemProperty>
+                                <key>file.encoding</key>
+                                <value>UTF-8</value>
+                            </systemProperty>
+                        </systemProperties>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+
         </plugins>
     </build>
 

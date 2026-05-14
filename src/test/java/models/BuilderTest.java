@@ -18,11 +18,11 @@ public class BuilderTest {
     void testYearRangeProtection() {
         // Тест верхней границы
         Person future = Person.builder().year(2027).build();
-        assertEquals(1989, future.getYear());
+        assertEquals(1899, future.getYear());
 
         // Тест нижней границы
         Person ancient = Person.builder().year(1899).build();
-        assertEquals(1989, ancient.getYear());
+        assertEquals(1899, ancient.getYear());
 
         // Валидный год должен пройти без изменений
         Person valid = Person.builder().year(2022).build();

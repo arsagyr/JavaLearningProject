@@ -103,19 +103,19 @@ public class Main {
         while (true) {
             // Проверяем, что введено именно целое число
             while (!scanner.hasNextInt()) {
-                System.out.print("Ошибка! Введите целое натуральное число: ");
+                System.err.print("Ошибка! Введите целое натуральное число: ");
                 scanner.next(); // пропускаем некорректный ввод
             }
             
             size = scanner.nextInt();
             
-            if (size > 0) {
-                break; // натуральное число - выходим из цикла
-            } else {
+            if (size  > 0) {
+                if (size< 1000000) break;  
+                else System.out.print("Ошибка! Число должно быть меньше миллиона): "); 
+                } else {
                 System.out.print("Ошибка! Число должно быть натуральным (больше 0): ");
             }
         }
-        
         scanner.nextLine();
         return size;
     }
