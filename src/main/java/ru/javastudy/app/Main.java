@@ -23,7 +23,6 @@ public class Main {
         boolean isRunning = true, isFull = false;
         System.out.println("Приветствую! Это программа ввода данных пользователей по фамилии, имени и году рождения.");
 
-        List<Person> persons = null;
         PersonList myPersons = new PersonList();
         Scanner scanner = new Scanner(System.in);
 
@@ -41,26 +40,21 @@ public class Main {
 
             switch (choice) {
                 case "1":
-                    chooseInput(scanner, myPersons, isFull);
+                    isFull = chooseInput(scanner, myPersons);
                     break;
                 case "2":
                     if (isFull) chooseSort(scanner, myPersons);
                     else System.out.print("Заполните список\n");
                     break;
                 case "3":
-                    System.out.println("\n--- Вывод данных ---");
-                    if ((persons != null)){
-                        persons.stream().forEach(System.out::println);
-                        System.out.println("\n--- Вывод данных завершен ---");
-                    } else if (myPersons != null){
+                    if (isFull){
                         myPersons.stream().forEach(System.out::println);
                         System.out.println("\n--- Вывод данных завершен ---");
-                    } else {
-                        System.out.println("Список не был заполнен\n");
-                    }
+                    }  
+                    else System.out.print("Заполните список\n");
                     break;
                 case "4":
-                    if (myPersons.size() > 0) {
+                    if (isFull){
                         WriteToFile writer = new WriteToFile();
                         writer.save(myPersons);
                     }
@@ -68,7 +62,6 @@ public class Main {
                     break;
                 case "5":
                     if (isSure(scanner)) {
-                        persons = null;
                         myPersons = new PersonList();
                     }
                     break;
@@ -83,17 +76,31 @@ public class Main {
         scanner.close();
     }
 
-    public static int inputInt(Scanner scanner){ 
+    public static int inputInt(Scanner scanner) { 
         System.out.print("Введите число людей: ");
-        int size = scanner.nextInt();
-        if (size <= 0) {
-            throw new IllegalArgumentException("Введите натуральное число");
+        int size;
+        
+        while (true) {
+            // Проверяем, что введено именно целое число
+            while (!scanner.hasNextInt()) {
+                System.out.print("Ошибка! Введите целое натуральное число: ");
+                scanner.next(); // пропускаем некорректный ввод
+            }
+            
+            size = scanner.nextInt();
+            
+            if (size > 0) {
+                break; // натуральное число - выходим из цикла
+            } else {
+                System.out.print("Ошибка! Число должно быть натуральным (больше 0): ");
+            }
         }
+        
         scanner.nextLine();
         return size;
     }
 
-    public static void chooseInput(Scanner scanner, PersonList personList, Boolean isFull){ 
+    public static boolean chooseInput(Scanner scanner, PersonList personList){ 
         System.out.println("Введите число:");
         System.out.println("1 - чтобы ввести данные вручную");
         System.out.println("2 - чтобы ввести данные случайно");
@@ -105,6 +112,7 @@ public class Main {
         String choice = scanner.next();
         scanner.nextLine();  
         int size;
+        boolean isFull = false;
         switch (choice) {
             case "1":
                 size = inputInt(scanner);
@@ -127,7 +135,7 @@ public class Main {
                 if (personList.size() > 0) {
                     System.out.println("Список успешно заполнен");    
                     isFull = true; 
-                }                              
+                }                       
                 break;
             case "4":
                 size = inputInt(scanner);
@@ -138,6 +146,7 @@ public class Main {
             default:
                 break;
         }
+        return isFull;
     }
 
         public static void chooseSort(Scanner scanner, PersonList personList){ 
