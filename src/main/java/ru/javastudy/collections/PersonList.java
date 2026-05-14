@@ -692,4 +692,53 @@ public class PersonList implements List<Person> {
     public boolean isEmpty() {
         return (size == 0);
     }
+
+    /**
+     * Описание типичной персоны.
+     */
+    public String getTypicalPersonaDescription() {
+        if (size == 0 || elements == null) {
+            return "Список персон пуст.";
+        }
+
+        int currentYear = java.time.Year.now().getValue(); // 2026
+
+        Map<String, Long> lastNames = new HashMap<>(3600);
+        Map<String, Long> firstNames = new HashMap<>(1200);
+
+        int[] birthYearsCounters = new int[128];
+
+        this.stream()
+                .filter(Objects::nonNull)
+                .forEach(p -> {
+                    String ln = p.getLastName();
+                    if (ln != null) lastNames.merge(ln, 1L, Long::sum);
+
+                    String fn = p.getFirstName();
+                    if (fn != null) firstNames.merge(fn, 1L, Long::sum);
+
+                    int y = p.getYear();
+                    if (y >= 1899 && y <= currentYear) {
+                        birthYearsCounters[y - 1899]++;
+                    }
+                });
+
+        String topLastName = lastNames.entrySet().stream()
+                .max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse("Фамилия_Unknown");
+
+        String topFirstName = firstNames.entrySet().stream()
+                .max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse("Имя_Unknown");
+
+        int maxCount = -1;
+        int topBirthYear = 1899;
+        for (int i = 0; i < birthYearsCounters.length; i++) {
+            if (birthYearsCounters[i] > maxCount) {
+                maxCount = birthYearsCounters[i];
+                topBirthYear = 1899 + i;
+            }
+        }
+
+        String ageOutput = String.valueOf(currentYear - topBirthYear);
+        return String.format("Меня зовут %s %s. Мне %s.", topLastName, topFirstName, ageOutput);
+    }
 }
