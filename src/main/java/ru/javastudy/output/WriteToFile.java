@@ -25,4 +25,24 @@ public class WriteToFile {
             e.printStackTrace();
         }
     }
+
+    public void save(PersonList persons, String filename) {
+        if (filename == null || filename.trim().isEmpty()) {
+            filename = DEFAULT_FILE_NAME;
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+
+            for (Person person : persons) {
+                writer.write(person.toString());
+                writer.newLine();
+            }
+            
+            System.out.println("Данные успешно сохранены в файл: " + filename);
+
+        } catch (IOException e) {
+            System.out.println("Ошибка записи в файл: " + filename);
+            e.printStackTrace();
+        }
+    }
 }
