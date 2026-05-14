@@ -52,6 +52,7 @@ public class Main {
                 case "3":
                     if (!myPersons.isEmpty()){
                         myPersons.stream().forEach(System.out::println);
+                        System.out.println("\n" + myPersons.getTypicalPersonaDescription());
                         System.out.println("\n--- Вывод данных завершен ---");
                     }  
                     else System.out.print("Заполните список\n");
