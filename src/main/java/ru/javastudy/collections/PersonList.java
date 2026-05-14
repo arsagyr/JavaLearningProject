@@ -701,49 +701,44 @@ public class PersonList implements List<Person> {
             return "Список персон пуст.";
         }
 
-        int currentYear = java.time.Year.now().getValue(); // Динамический расчет (2026)
+        int currentYear = java.time.Year.now().getValue(); // 2026
 
-        Map<String, Long> lastNames = new HashMap<>();
-        Map<String, Long> firstNames = new HashMap<>();
-        Map<Integer, Long> birthYears = new HashMap<>();
+        Map<String, Long> lastNames = new HashMap<>(3600);
+        Map<String, Long> firstNames = new HashMap<>(1200);
 
-        // Сбор статистики по всем элементам вашего массива
+        int[] birthYearsCounters = new int[128];
+
         this.stream()
                 .filter(Objects::nonNull)
                 .forEach(p -> {
                     String ln = p.getLastName();
-                    if (ln != null) {
-                        lastNames.merge(ln, 1L, Long::sum);
-                    }
+                    if (ln != null) lastNames.merge(ln, 1L, Long::sum);
 
                     String fn = p.getFirstName();
-                    if (fn != null) {
-                        firstNames.merge(fn, 1L, Long::sum);
-                    }
+                    if (fn != null) firstNames.merge(fn, 1L, Long::sum);
 
                     int y = p.getYear();
-                    birthYears.merge(y, 1L, Long::sum);
+                    if (y >= 1899 && y <= currentYear) {
+                        birthYearsCounters[y - 1899]++;
+                    }
                 });
 
-        // Поиск самых популярных значений
         String topLastName = lastNames.entrySet().stream()
-                .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .orElse("Фамилия_Unknown"); // [Page 16]
+                .max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse("Фамилия_Unknown");
 
         String topFirstName = firstNames.entrySet().stream()
-                .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .orElse("Имя_Unknown"); // [Page 16]
+                .max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse("Имя_Unknown");
 
-        Integer topBirthYear = birthYears.entrySet().stream()
-                .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .orElse(1899); // Ваша маркерная точка отсчета [Page 1]
+        int maxCount = -1;
+        int topBirthYear = 1899;
+        for (int i = 0; i < birthYearsCounters.length; i++) {
+            if (birthYearsCounters[i] > maxCount) {
+                maxCount = birthYearsCounters[i];
+                topBirthYear = 1899 + i;
+            }
+        }
 
-        // Прямой математический расчет возраста без ветвлений
         String ageOutput = String.valueOf(currentYear - topBirthYear);
-
         return String.format("Меня зовут %s %s. Мне %s.", topLastName, topFirstName, ageOutput);
     }
 }
