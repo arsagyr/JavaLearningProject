@@ -19,7 +19,7 @@ public class EvenQuickSort implements SortingStrategy {
             for (int i = 0; i < list.size(); i++) {
                 // Если год рождения четный, копируем ссылку на объект во временный список
                 if (list.get(i).getYear() % 2 == 0) {
-                    evenList.add(list.get(i));
+                    evenList.add(list.getFast(i));
                 }
             }
 
@@ -35,18 +35,18 @@ public class EvenQuickSort implements SortingStrategy {
 
             for (int i = 0; i < list.size(); i++) {
                 // Опираемся на структуру еще не измененного исходного списка
-                if (list.get(i).getYear() % 2 == 0) {
+                if (list.getFast(i).getYear() % 2 == 0) {
                     // На четное значение подставляем гарантированно отсортированный элемент
                     result.add(evenList.get(evenIndex++));
                 } else {
                     // Нечетные элементы переносим без изменений структуры
-                    result.add(list.get(i));
+                    result.add(list.getFast(i));
                 }
             }
 
             // Сбрасываем старое состояние коллекции и наполняем её валидными данными из промежуточного списка
             list.clear(result.size());
-            list.addAll(result);
+            list.rewrite(result);
         }
     }
 }
